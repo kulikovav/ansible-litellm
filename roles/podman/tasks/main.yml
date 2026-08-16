@@ -7,9 +7,16 @@
           - podman
           - uidmap
           - slirp4netns
+          - podman-compose
         state: present
         update_cache: true
-      when: ansible_os_family == "Debian"
+      when: ansible_facts["os_family"] == "Debian"
+
+    - name: Enable EPEL repository (podman-compose is not in RHEL base repos)
+      ansible.builtin.dnf:
+        name: epel-release
+        state: present
+      when: ansible_facts["os_family"] == "RedHat"
 
     - name: Install Podman (Oracle Linux / RHEL)
       ansible.builtin.dnf:
@@ -17,21 +24,9 @@
           - podman
           - podman-docker
           - container-selinux
+          - podman-compose
         state: present
-      when: ansible_os_family == "RedHat"
-
-    - name: Install podman-compose via pip
-      ansible.builtin.pip:
-        name: podman-compose
-        state: present
-        extra_args: "--break-system-packages"
-      when: ansible_python_version is version('3.11', '>=')
-
-    - name: Install podman-compose via pip (older Python)
-      ansible.builtin.pip:
-        name: podman-compose
-        state: present
-      when: ansible_python_version is version('3.11', '<')
+      when: ansible_facts["os_family"] == "RedHat"
 
 - name: Open HTTP/HTTPS ports in firewalld
   ansible.posix.firewalld:
@@ -42,7 +37,7 @@
   loop:
     - "{{ nginx_http_port }}"
     - "{{ nginx_https_port }}"
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts["os_family"] == "RedHat"
 
 - name: Allow rootless podman to bind privileged ports (80/443)
   ansible.posix.sysctl:

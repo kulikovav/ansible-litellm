@@ -6,7 +6,7 @@
 litellm_domain: "{{ vault_litellm_domain }}"
 
 # Rootless user home (connection user). Facts are gathered under become (root),
-# so ansible_env.HOME points at /root; use this instead for user-scoped paths.
+# so ansible_facts['env'].HOME points at /root; use this instead for user-scoped paths.
 litellm_user_home: "/home/{{ ansible_user }}"
 
 # ---------------------------------------------------------------------------

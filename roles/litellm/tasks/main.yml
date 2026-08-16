@@ -1,4 +1,47 @@
 ---
+- name: Validate required input variables are defined
+  # All user-provided variables consumed by this role (secrets.yml).
+  ansible.builtin.assert:
+    that:
+      - vault_litellm_domain is defined
+      - vault_litellm_allowed_ips is defined
+      - vault_postgres_password is defined
+      - vault_redis_password is defined
+      - vault_litellm_master_key is defined
+      - vault_custom_coding_api_base is defined
+      - vault_custom_agentic_api_base is defined
+      - vault_custom_fast_api_base is defined
+      - vault_custom_embedding_api_base is defined
+      - vault_opencode_api_key is defined
+      - vault_cline_api_key is defined
+      - vault_openrouter_api_key is defined
+      - vault_exa_api_key is defined
+      - vault_firecrawl_api_key is defined
+      - vault_nanogpt_api_key is defined
+      - vault_context7_api_key is defined
+      - vault_headroom_api_key is defined
+      - vault_headroom_proxy_token is defined
+      - vault_resend_api_key is defined
+      - vault_resend_from_email is defined
+    fail_msg: "One or more required input variables are not defined. Set them in inventory/group_vars/all/secrets.yml"
+    quiet: true
+
+- name: Validate core input variables are not empty
+  # Subset where an empty value breaks the stack. API keys may be empty.
+  ansible.builtin.assert:
+    that:
+      - vault_litellm_domain | length > 0
+      - vault_litellm_allowed_ips | length > 0
+      - vault_postgres_password | length > 0
+      - vault_redis_password | length > 0
+      - vault_litellm_master_key | length > 0
+      - vault_custom_coding_api_base | length > 0
+      - vault_custom_agentic_api_base | length > 0
+      - vault_custom_fast_api_base | length > 0
+      - vault_custom_embedding_api_base | length > 0
+    fail_msg: "One or more required input variables are empty. Set them in inventory/group_vars/all/secrets.yml"
+    quiet: true
+
 - name: Create LiteLLM directory structure
   ansible.builtin.file:
     path: "{{ item }}"
@@ -21,7 +64,7 @@
     mode: "0644"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-  notify: recreate litellm
+  notify: Recreate litellm
 
 - name: Render LiteLLM environment file
   ansible.builtin.template:
@@ -30,7 +73,7 @@
     mode: "0600"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-  notify: recreate litellm
+  notify: Recreate litellm
 
 - name: Render Redis configuration
   ansible.builtin.template:
@@ -45,7 +88,7 @@
     src: nginx.conf.j2
     dest: "{{ litellm_nginx_conf }}"
     mode: "0644"
-  notify: reload nginx
+  notify: Reload nginx
 
 - name: Render podman-compose stack
   ansible.builtin.template:
@@ -58,12 +101,12 @@
 - name: Locate podman-compose binary
   ansible.builtin.command: "command -v podman-compose"
   become: false
-  register: _podman_compose_cmd
+  register: litellm_podman_compose_cmd
   changed_when: false
 
 - name: Set podman-compose path
   ansible.builtin.set_fact:
-    podman_compose_path: "{{ _podman_compose_cmd.stdout }}"
+    litellm_podman_compose_path: "{{ litellm_podman_compose_cmd.stdout }}"
 
 - name: Install stack systemd user unit
   ansible.builtin.template:
@@ -105,4 +148,17 @@
     state: started
     enabled: true
     scope: user
+  become: false
+
+- name: Validate LiteLLM service is up and running
+  # Retry for up to 5 minutes: first boot takes the compose start_period
+  # (60s) plus postgres/redis health checks.
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ litellm_port }}/health/liveliness"
+    status_code: 200
+    timeout: 10
+  register: litellm_health
+  until: litellm_health.status == 200
+  retries: 30
+  delay: 10
   become: false
