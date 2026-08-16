@@ -1,5 +1,5 @@
 ---
-- name: Deploy LiteLLM (Podman) to uk1
+- name: Deploy LiteLLM (Podman)
   hosts: litellm
   become: true
 

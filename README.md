@@ -1,4 +1,4 @@
-# LiteLLM on Podman (uk1)
+# LiteLLM on Podman
 
 Ansible playbook that installs the latest LiteLLM proxy and its dependencies on
 `server1`, served at `https://fqdn`.
