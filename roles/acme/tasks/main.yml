@@ -10,9 +10,16 @@
     - "{{ acme_webroot }}"
     - "{{ litellm_acme_dir }}/certs"
 
+- name: Download acme.sh installer
+  ansible.builtin.get_url:
+    url: https://get.acme.sh
+    dest: "{{ litellm_user_home }}/acme.sh-install.sh"
+    mode: "0755"
+  become: false
+
 - name: Install acme.sh
-  ansible.builtin.shell:
-    cmd: "curl -fsSL https://get.acme.sh | sh -s email={{ acme_email }}"
+  ansible.builtin.command:
+    cmd: "{{ litellm_user_home }}/acme.sh-install.sh -s email={{ acme_email }}"
     creates: "{{ litellm_user_home }}/.acme.sh/acme.sh"
   become: false
 
@@ -22,9 +29,9 @@
       {{ litellm_user_home }}/.acme.sh/acme.sh --issue -d {{ litellm_domain }}
       -w {{ acme_webroot }} --keylength ec-256
   become: false
-  register: _issue
-  changed_when: "'Cert success' in _issue.stdout"
-  failed_when: _issue.rc not in [0, 2]
+  register: acme_issue
+  changed_when: "'Cert success' in acme_issue.stdout"
+  failed_when: acme_issue.rc not in [0, 2]
 
 - name: Install certificate for Nginx
   ansible.builtin.command:
