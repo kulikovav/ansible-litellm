@@ -1,0 +1,14 @@
+[Unit]
+Description=LiteLLM podman-compose stack (postgres, redis, litellm, nginx)
+After=network-online.target podman.socket
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory={{ litellm_config_dir }}
+ExecStart={{ podman_compose_path }} -f {{ litellm_config_dir }}/compose.yml up -d
+ExecStop={{ podman_compose_path }} -f {{ litellm_config_dir }}/compose.yml down
+
+[Install]
+WantedBy=default.target

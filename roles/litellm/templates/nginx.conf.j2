@@ -1,0 +1,65 @@
+# Host nginx reverse proxy for LiteLLM — matches beekube litellm.tf ingress
+# annotations (proxy-read/send-timeout 3600s, proxy-connect-timeout 60s,
+# keepalive 3600, client-max-body-size 10m, proxy-buffering off).
+# Proxies to the LiteLLM container bound on 127.0.0.1:{{ litellm_port }}.
+
+# WebSocket support (LiteLLM /realtime, MCP streamable HTTP). Empty Connection
+# keeps HTTP keepalive for normal requests; "upgrade" enables websockets.
+map $http_upgrade $litellm_connection_upgrade {
+    default upgrade;
+    ''      "";
+}
+
+server {
+    listen 80;
+    server_name {{ litellm_domain }};
+
+    # acme.sh HTTP-01 challenge (webroot on the host)
+    location /.well-known/acme-challenge/ {
+        root {{ acme_webroot }};
+    }
+
+    location / {
+{% for ip in litellm_allowed_ips %}
+        allow {{ ip }};
+{% endfor %}
+        deny all;
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    server_name {{ litellm_domain }};
+
+    ssl_certificate     {{ litellm_acme_dir }}/certs/fullchain.pem;
+    ssl_certificate_key {{ litellm_acme_dir }}/certs/privkey.pem;
+
+    server_tokens off;
+    client_max_body_size 10m;
+
+{% for ip in litellm_allowed_ips %}
+    allow {{ ip }};
+{% endfor %}
+    deny all;
+
+    location / {
+        proxy_pass http://127.0.0.1:{{ litellm_port }};
+        proxy_http_version 1.1;
+
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # WebSocket upgrade headers
+        proxy_set_header Upgrade    $http_upgrade;
+        proxy_set_header Connection $litellm_connection_upgrade;
+
+        proxy_buffering off;
+        proxy_connect_timeout 60s;
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+        keepalive_timeout 3600;
+    }
+}

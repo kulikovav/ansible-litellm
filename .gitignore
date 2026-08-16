@@ -1,0 +1,15 @@
+# Secrets — never commit real credentials
+inventory/group_vars/all/secrets.yml
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Ansible
+*.retry
+
+# OS / editor
+.DS_Store
+*.swp

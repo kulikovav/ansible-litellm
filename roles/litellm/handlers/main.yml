@@ -1,0 +1,11 @@
+---
+- name: reload nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: reloaded
+
+- name: recreate litellm
+  ansible.builtin.command:
+    cmd: "podman-compose -f {{ litellm_config_dir }}/compose.yml up -d --force-recreate --no-deps litellm"
+  become: false
+  changed_when: true

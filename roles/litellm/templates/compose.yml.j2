@@ -1,0 +1,101 @@
+services:
+  postgres:
+    image: {{ postgres_image }}
+    container_name: litellm-postgres
+    environment:
+      POSTGRES_DB: {{ postgres_db }}
+      POSTGRES_USER: {{ postgres_user }}
+      POSTGRES_PASSWORD: {{ postgres_password }}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ postgres_user }} -d {{ postgres_db }}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: {{ redis_image }}
+    container_name: litellm-redis
+    environment:
+      REDIS_PASSWORD: {{ redis_password }}
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - redis-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $$REDIS_PASSWORD ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  litellm:
+    image: {{ litellm_image }}
+    container_name: litellm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file: .env
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    ports:
+      - "127.0.0.1:{{ litellm_port }}:4000"
+    command: ["--config", "/app/config.yaml"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  headroom:
+    image: {{ headroom_image }}
+    container_name: litellm-headroom
+    depends_on:
+      - litellm
+    environment:
+      HOME: /home/nonroot
+      HEADROOM_HOST: 0.0.0.0
+      HEADROOM_PORT: "{{ headroom_port }}"
+      HEADROOM_MODE: {{ headroom_mode }}
+      HEADROOM_WORKSPACE_DIR: {{ headroom_workspace_dir }}
+      HEADROOM_CONFIG_DIR: {{ headroom_config_dir }}
+      HEADROOM_TELEMETRY: "off"
+      HEADROOM_OUTPUT_SHAPER: "1"
+      HEADROOM_COMPRESS_ALLOW_REMOTE: "1"
+      HEADROOM_SAVINGS_PROFILE: coding
+      HEADROOM_EMBEDDING_SERVER: "on"
+      HEADROOM_CCR_BACKEND: sqlite
+      HEADROOM_COMPRESS_USER_MESSAGES: "1"
+      OPENAI_TARGET_API_URL: {{ headroom_target_api_url }}
+{% if headroom_proxy_token %}
+      HEADROOM_PROXY_TOKEN: {{ headroom_proxy_token }}
+{% endif %}
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - "{{ headroom_port }}"
+      - --log-messages
+      - --backend
+      - "{{ headroom_backend }}"
+      - --no-rate-limit
+    volumes:
+      - headroom-data:/home/nonroot/.headroom
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:{{ headroom_port }}/readyz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  redis-data:
+  headroom-data:

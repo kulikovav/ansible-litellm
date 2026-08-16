@@ -1,0 +1,37 @@
+---
+- name: Create webroot and certificate directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  loop:
+    - "{{ acme_webroot }}"
+    - "{{ litellm_acme_dir }}/certs"
+
+- name: Install acme.sh
+  ansible.builtin.shell:
+    cmd: "curl -fsSL https://get.acme.sh | sh -s email={{ acme_email }}"
+    creates: "{{ litellm_user_home }}/.acme.sh/acme.sh"
+  become: false
+
+- name: Issue certificate (HTTP-01 webroot)
+  ansible.builtin.command:
+    cmd: >-
+      {{ litellm_user_home }}/.acme.sh/acme.sh --issue -d {{ litellm_domain }}
+      -w {{ acme_webroot }} --keylength ec-256
+  become: false
+  register: _issue
+  changed_when: "'Cert success' in _issue.stdout"
+  failed_when: _issue.rc not in [0, 2]
+
+- name: Install certificate for Nginx
+  ansible.builtin.command:
+    cmd: >-
+      {{ litellm_user_home }}/.acme.sh/acme.sh --install-cert -d {{ litellm_domain }} --ecc
+      --key-file {{ litellm_acme_dir }}/certs/privkey.pem
+      --fullchain-file {{ litellm_acme_dir }}/certs/fullchain.pem
+      --reloadcmd "sudo systemctl reload nginx"
+  become: false
+  changed_when: true

@@ -1,0 +1,9 @@
+# Redis persistence — matches beekube litellm.tf redis.commonConfiguration
+appendonly {{ redis_appendonly }}
+appendfsync {{ redis_appendfsync }}
+
+# Disable RDB persistence, AOF persistence already enabled.
+save {{ redis_save }}
+
+# Require password (LiteLLM cache_params.password = os.environ/REDIS_PASSWORD)
+requirepass {{ redis_password }}

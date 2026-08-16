@@ -1,0 +1,106 @@
+---
+# =============================================================================
+# LiteLLM standalone deployment (Podman) — matches beekube Terraform litellm.tf
+# =============================================================================
+
+litellm_domain: "{{ vault_litellm_domain }}"
+
+# Rootless user home (connection user). Facts are gathered under become (root),
+# so ansible_env.HOME points at /root; use this instead for user-scoped paths.
+litellm_user_home: "/home/{{ ansible_user }}"
+
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+litellm_base_dir: "/opt/litellm"
+litellm_config_dir: "{{ litellm_base_dir }}/config"
+litellm_data_dir: "{{ litellm_base_dir }}/data"
+litellm_acme_dir: "{{ litellm_base_dir }}/acme"
+
+# Host nginx reverse proxy (the host already runs nginx serving other sites).
+litellm_nginx_conf: "/etc/nginx/conf.d/litellm.conf"
+
+# ---------------------------------------------------------------------------
+# Container images
+# ---------------------------------------------------------------------------
+# LiteLLM "latest": the rolling tag. Pin to a vX.Y.Z release tag (e.g.
+# ghcr.io/berriai/litellm-database:v1.96.2) for deterministic rollbacks.
+litellm_image: "ghcr.io/berriai/litellm-database:latest"
+postgres_image: "docker.io/library/postgres:16-alpine"
+redis_image: "docker.io/library/redis:7-alpine"
+
+# ---------------------------------------------------------------------------
+# Ports (host bindings)
+# ---------------------------------------------------------------------------
+nginx_http_port: 80
+nginx_https_port: 443
+litellm_port: 4000
+
+# ---------------------------------------------------------------------------
+# Nginx access control — public endpoint restricted to these IPs.
+# The acme.sh HTTP-01 challenge path stays open for Let's Encrypt validation.
+# ---------------------------------------------------------------------------
+litellm_allowed_ips: "{{ vault_litellm_allowed_ips }}"
+
+# ---------------------------------------------------------------------------
+# PostgreSQL
+# ---------------------------------------------------------------------------
+postgres_db: "litellm"
+postgres_user: "litellm"
+postgres_password: "{{ vault_postgres_password }}"
+
+# ---------------------------------------------------------------------------
+# Redis (AOF persistence, matching Terraform redis commonConfiguration)
+# ---------------------------------------------------------------------------
+redis_password: "{{ vault_redis_password }}"
+redis_appendonly: "yes"
+redis_appendfsync: "always"
+redis_save: '""'
+
+# ---------------------------------------------------------------------------
+# LiteLLM proxy settings — mirror of variables_litellm.tf defaults
+# ---------------------------------------------------------------------------
+litellm_master_key: "{{ vault_litellm_master_key }}"
+litellm_request_timeout: 3600
+litellm_cache_ttl: 259200
+litellm_db_connection_pool_limit: 10
+litellm_proxy_batch_write_interval: 60
+
+# Headroom pre-call guardrail endpoint — local headroom service in the compose network.
+litellm_headroom_api_base: "http://headroom:8787"
+
+# ---------------------------------------------------------------------------
+# Headroom compression proxy — matches beekube headroom.tf
+# ---------------------------------------------------------------------------
+headroom_image: "ghcr.io/headroomlabs-ai/headroom:0.35.0"
+headroom_port: 8787
+headroom_mode: "cache"
+headroom_backend: "litellm-openai"
+headroom_target_api_url: "http://litellm:4000/v1"
+headroom_workspace_dir: "/home/nonroot/.headroom"
+headroom_config_dir: "/home/nonroot/.headroom/config"
+headroom_proxy_token: "{{ vault_headroom_proxy_token }}"
+
+# ---------------------------------------------------------------------------
+# Provider API keys (os.environ references in config.yaml)
+# ---------------------------------------------------------------------------
+opencode_api_key: "{{ vault_opencode_api_key }}"
+cline_api_key: "{{ vault_cline_api_key }}"
+openrouter_api_key: "{{ vault_openrouter_api_key }}"
+exa_api_key: "{{ vault_exa_api_key }}"
+firecrawl_api_key: "{{ vault_firecrawl_api_key }}"
+headroom_api_key: "{{ vault_headroom_api_key }}"
+nanogpt_api_key: "{{ vault_nanogpt_api_key }}"
+context7_api_key: "{{ vault_context7_api_key }}"
+
+# ---------------------------------------------------------------------------
+# Resend email notifications (resend_email callback)
+# ---------------------------------------------------------------------------
+resend_api_key: "{{ vault_resend_api_key }}"
+resend_from_email: "{{ vault_resend_from_email }}"
+
+# ---------------------------------------------------------------------------
+# acme.sh (HTTP-01 webroot)
+# ---------------------------------------------------------------------------
+acme_email: "{{ vault_acme_email }}"
+acme_webroot: "{{ litellm_acme_dir }}/webroot"

@@ -1,0 +1,65 @@
+---
+- name: Install Podman and podman-compose
+  block:
+    - name: Install Podman (Debian/Ubuntu)
+      ansible.builtin.apt:
+        name:
+          - podman
+          - uidmap
+          - slirp4netns
+        state: present
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: Install Podman (Oracle Linux / RHEL)
+      ansible.builtin.dnf:
+        name:
+          - podman
+          - podman-docker
+          - container-selinux
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Install podman-compose via pip
+      ansible.builtin.pip:
+        name: podman-compose
+        state: present
+        extra_args: "--break-system-packages"
+      when: ansible_python_version is version('3.11', '>=')
+
+    - name: Install podman-compose via pip (older Python)
+      ansible.builtin.pip:
+        name: podman-compose
+        state: present
+      when: ansible_python_version is version('3.11', '<')
+
+- name: Open HTTP/HTTPS ports in firewalld
+  ansible.posix.firewalld:
+    port: "{{ item }}/tcp"
+    permanent: true
+    state: enabled
+    immediate: true
+  loop:
+    - "{{ nginx_http_port }}"
+    - "{{ nginx_https_port }}"
+  when: ansible_os_family == "RedHat"
+
+- name: Allow rootless podman to bind privileged ports (80/443)
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_unprivileged_port_start
+    value: "80"
+    state: present
+    reload: true
+
+- name: Enable lingering for rootless user (boot persistence)
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger {{ ansible_user }}"
+  changed_when: false
+
+- name: Enable Podman user socket
+  ansible.builtin.systemd:
+    name: podman.socket
+    state: started
+    enabled: true
+    scope: user
+  become: false

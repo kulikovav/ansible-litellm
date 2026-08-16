@@ -1,0 +1,9 @@
+---
+- name: Deploy LiteLLM (Podman) to uk1
+  hosts: litellm
+  become: true
+
+  roles:
+    - podman
+    - litellm
+    - acme
