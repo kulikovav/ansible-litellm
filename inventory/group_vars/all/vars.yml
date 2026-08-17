@@ -63,7 +63,7 @@ redis_save: '""'
 litellm_master_key: "{{ vault_litellm_master_key }}"
 litellm_request_timeout: 3600
 litellm_cache_ttl: 259200
-litellm_db_connection_pool_limit: 10
+litellm_db_connection_pool_limit: 8
 litellm_proxy_batch_write_interval: 60
 
 # Headroom pre-call guardrail endpoint — local headroom service in the compose network.
