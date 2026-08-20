@@ -16,8 +16,8 @@
   },
   'deepseek-v4-flash': {
     'max_input_tokens': 1048576,
-    'max_output_tokens': 384000,
-    'max_tokens': 384000,
+    'max_output_tokens': 64000,
+    'max_tokens': 64000,
     'mode': 'chat',
     'supports_function_calling': True,
     'supports_reasoning': True,
@@ -248,9 +248,42 @@
       'input_cost_per_token': 0.0000003,
       'output_cost_per_token': 0.0000012,
       'cache_read_input_token_cost': 0.00000000006
+    },
+  },
+  'ollama': {
+    'deepseek-v4-pro': {
+      'input_cost_per_token': 0.0000011,
+      'output_cost_per_token': 0.0000022,
+      'cache_read_input_token_cost': 0.00000000011
+    },
+    'deepseek-v4-flash': {
+      'input_cost_per_token': 0.00000014,
+      'output_cost_per_token': 0.00000028,
+      'cache_read_input_token_cost': 0.0000000000028
+    },
+    'glm-5.2': {
+      'input_cost_per_token': 0.00000042,
+      'output_cost_per_token': 0.00000132,
+      'cache_read_input_token_cost': 0.000000000078
+    },
+    'kimi-k2.7-code': {
+      'input_cost_per_token': 0.00000095,
+      'output_cost_per_token': 0.000004,
+      'cache_read_input_token_cost': 0.00000000019
+    },
+    'kimi-k3': {
+      'input_cost_per_token': 0.000003,
+      'output_cost_per_token': 0.000015,
+      'cache_read_input_token_cost': 0.00000000003
+    },
+    'minimax-m3': {
+      'input_cost_per_token': 0.0000003,
+      'output_cost_per_token': 0.0000012,
+      'cache_read_input_token_cost': 0.00000000006
     }
   }
-} %}
+}
+%}
 {# Per-model health probe caps. LiteLLM picks the 128/16 tier from its internal
    model registry only when the deployment string is listed there, so pin the
    tier per model_info to make it deterministic. -#}
@@ -462,27 +495,6 @@ model_list:
       api_key: os.environ/OPENCODE_API_KEY
       api_base: https://opencode.ai/zen/go/v1
 
-  - model_name: minimax-m2.7
-    model_info:
-      input_cost_per_token: 0.0000003
-      output_cost_per_token: 0.0000012
-      cache_read_input_token_cost: 0.0000006
-      max_input_tokens: 196608
-      max_output_tokens: 65536
-      max_tokens: 65536
-      mode: chat
-      supports_function_calling: true
-      supports_tool_choice: true
-      supports_reasoning: true
-      supports_vision: true
-      supports_response_schema: true
-      supports_computer_use: false
-      supports_prompt_caching: true
-    litellm_params:
-      model: minimax/minimax-m2.7
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go
-
   - model_name: minimax-m3
     model_info:
 {{ litellm_model_info('minimax-m3', 'opencode') }}
@@ -683,12 +695,90 @@ model_list:
       api_base: https://nano-gpt.com/api/v1
       stream: true
 
+  # Ollama models
+  - model_name: deepseek-v4-pro
+    model_info:
+{{ litellm_model_info('deepseek-v4-pro', 'ollama') }}
+    litellm_params:
+      model: ollama_chat/deepseek-v4-pro:0813
+      api_key: os.environ/OLLAMA_API_KEY
+      api_base: https://ollama.com/api/chat
+      keep_alive: "10m"
+  - model_name: deepseek-v4-flash
+    model_info:
+{{ litellm_model_info('deepseek-v4-flash', 'ollama') }}
+    litellm_params:
+      model: ollama_chat/deepseek-v4-flash:0731
+      api_key: os.environ/OLLAMA_API_KEY
+      api_base: https://ollama.com/api/chat
+      keep_alive: "10m"
+  - model_name: glm-5.2
+    model_info:
+{{ litellm_model_info('glm-5.2', 'ollama') }}
+    litellm_params:
+      model: ollama_chat/glm-5.2
+      api_key: os.environ/OLLAMA_API_KEY
+      api_base: https://ollama.com/api/chat
+      keep_alive: "10m"
+  - model_name: kimi-k2.7-code
+    model_info:
+{{ litellm_model_info('kimi-k2.7-code', 'ollama') }}
+    litellm_params:
+      model: ollama_chat/kimi-k2.7-code
+      api_key: os.environ/OLLAMA_API_KEY
+      api_base: https://ollama.com/api/chat
+      keep_alive: "10m"
+  - model_name: kimi-k3
+    model_info:
+{{ litellm_model_info('kimi-k3', 'ollama') }}
+    litellm_params:
+      model: ollama_chat/kimi-k3
+      api_key: os.environ/OLLAMA_API_KEY
+      api_base: https://ollama.com/api/chat
+      keep_alive: "10m"
+  - model_name: minimax-m3
+    model_info:
+{{ litellm_model_info('minimax-m3', 'ollama') }}
+    litellm_params:
+      model: ollama_chat/minimax-m3
+      api_key: os.environ/OLLAMA_API_KEY
+      api_base: https://ollama.com/api/chat
+      keep_alive: "10m"
   # OpenCode zen OpenAI models (generated)
   - model_name: mimo-v2.5-free
     litellm_params:
       model: xiaomi_mimo/mimo-v2.5-free
       api_key: os.environ/OPENCODE_API_KEY
       api_base: https://opencode.ai/zen/v1
+
+  - model_name: hy3-free
+    model_info:
+      max_input_tokens: 256000
+      max_output_tokens: 32000
+      mode: chat
+      supports_function_calling: true
+      supports_reasoning: true
+      supports_tool_choice: true
+      supports_prompt_caching: true
+    litellm_params:
+      model: tencent/hy3-free
+      api_key: os.environ/OPENCODE_API_KEY
+      api_base: https://opencode.ai/zen/v1
+
+  - model_name: muse-spark-1.2-free
+    model_info:
+      max_input_tokens: 1048576
+      max_output_tokens: 128000
+      mode: chat
+      supports_function_calling: true
+      supports_reasoning: true
+      supports_tool_choice: true
+      supports_prompt_caching: true
+    litellm_params:
+      model: meta/muse-spark-1.2-contributor-free
+      api_key: os.environ/OPENCODE_API_KEY
+      api_base: https://opencode.ai/zen/v1
+      supported_endpoints: ["/v1/responses"]
 
   - model_name: nemotron-3-ultra-free
     litellm_params:
@@ -740,7 +830,7 @@ guardrails:
       mode: pre_call
       api_base: "{{ litellm_headroom_api_base }}"
       api_key: os.environ/HEADROOM_API_KEY
-      default_on: true
+      default_on: false
 
 rate_limit:
   enabled: false
@@ -752,7 +842,7 @@ general_settings:
   allow_requests_on_db_unavailable: true
   disable_error_logs: true
   master_key: os.environ/PROXY_MASTER_KEY
-  background_health_checks: true
+  background_health_checks: false
   health_check_interval: 7200
   store_prompts_in_spend_logs: true
   store_model_in_db: true
@@ -872,13 +962,13 @@ router_settings:
         lowest_latency_buffer: 0.5
   fallbacks:
     - openai/gemma-4-12B-it:
-        - deepseek-v4-flash
+        - hy3-free
     - agentic:
         - deepseek-v4-flash
     - coding:
-        - kimi-k3
+        - kimi-k2.7-code
     - fast:
-        - deepseek-v4-flash
+        - hy3-free
   enable_pre_call_checks: true
   num_retries: 1
   retry_after: 600
@@ -889,8 +979,8 @@ router_settings:
     - agentic:
         - deepseek-v4-flash
     - coding:
-        - kimi-k3
+        - kimi-k2.7-code
     - fast:
-        - deepseek-v4-flash
+        - hy3-free
   model_group_alias:
     embedding: openai/qwen3-embedding-0.6b
