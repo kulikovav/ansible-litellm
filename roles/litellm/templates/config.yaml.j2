@@ -1,20 +1,11 @@
 ---
 {# Shared model catalog: caps are identical for every provider of a model,
    costs differ per provider. litellm_model_info() combines both into the
-   rendered model_info block. -#}
+   rendered model_info block. Costs are USD per token; the Command Code block
+   uses https://commandcode.ai/models rates with its active deals already
+   applied (checked 2026-09-15), so it is lower than vendor list prices. -#}
 {% set litellm_model_caps = {
   'deepseek-v4-pro': {
-    'max_input_tokens': 1048576,
-    'max_output_tokens': 384000,
-    'max_tokens': 384000,
-    'mode': 'chat',
-    'supports_function_calling': True,
-    'supports_reasoning': True,
-    'supports_tool_choice': True,
-    'supports_response_schema': False,
-    'supports_prompt_caching': True
-  },
-  'deepseek-v4-flash': {
     'max_input_tokens': 1048576,
     'max_output_tokens': 64000,
     'max_tokens': 64000,
@@ -25,7 +16,18 @@
     'supports_response_schema': False,
     'supports_prompt_caching': True
   },
-  'glm-5.2': {
+  'deepseek-v4.1-flash': {
+    'max_input_tokens': 1048576,
+    'max_output_tokens': 64000,
+    'max_tokens': 64000,
+    'mode': 'chat',
+    'supports_function_calling': True,
+    'supports_reasoning': True,
+    'supports_tool_choice': True,
+    'supports_response_schema': False,
+    'supports_prompt_caching': True
+  },
+  'glm-5.3': {
     'max_input_tokens': 1000000,
     'max_output_tokens': 128000,
     'max_tokens': 128000,
@@ -34,6 +36,17 @@
     'supports_reasoning': True,
     'supports_tool_choice': True,
     'supports_response_schema': False,
+    'supports_prompt_caching': True
+  },
+  'glm-5.3-flash': {
+    'max_input_tokens': 1000000,
+    'max_output_tokens': 64000,
+    'max_tokens': 64000,
+    'mode': 'chat',
+    'supports_function_calling': True,
+    'supports_reasoning': True,
+    'supports_tool_choice': True,
+    'supports_response_schema': True,
     'supports_prompt_caching': True
   },
   'kimi-k2.7-code': {
@@ -112,67 +125,18 @@
   }
 } %}
 {% set litellm_model_costs = {
-  'opencode': {
-    'deepseek-v4-pro': {
-      'input_cost_per_token': 0.00000132,
-      'output_cost_per_token': 0.00000396,
-      'cache_read_input_token_cost': 0.000000044
-    },
-    'deepseek-v4-flash': {
-      'input_cost_per_token': 0.00000044,
-      'output_cost_per_token': 0.00000132,
-      'cache_read_input_token_cost': 0.000000014
-    },
-    'glm-5.2': {
-      'input_cost_per_token': 0.0000014,
-      'output_cost_per_token': 0.0000044,
-      'cache_read_input_token_cost': 0.00000026
-    },
-    'kimi-k2.7-code': {
-      'input_cost_per_token': 0.00000095,
-      'output_cost_per_token': 0.000004,
-      'cache_read_input_token_cost': 0.00000019
-    },
-    'kimi-k3': {
-      'input_cost_per_token': 0.000003,
-      'output_cost_per_token': 0.000015,
-      'cache_read_input_token_cost': 0.0000003
-    },
-    'mimo-v2.5': {
-      'input_cost_per_token': 0.00000014,
-      'output_cost_per_token': 0.00000028,
-      'cache_creation_input_token_cost': 0.0,
-      'cache_read_input_token_cost': 0.0000000028
-    },
-    'mimo-v2.5-pro': {
-      'input_cost_per_token': 0.00000174,
-      'output_cost_per_token': 0.00000348,
-      'cache_creation_input_token_cost': 0.0,
-      'cache_read_input_token_cost': 0.0000000145
-    },
-    'minimax-m3': {
-      'input_cost_per_token': 0.0000003,
-      'output_cost_per_token': 0.0000012,
-      'cache_read_input_token_cost': 0.0000006
-    },
-    'qwen3.8-max': {
-      'input_cost_per_token': 0.000002,
-      'output_cost_per_token': 0.000006,
-      'cache_read_input_token_cost': 0.00000025
-    }
-  },
   'cline': {
     'deepseek-v4-pro': {
       'input_cost_per_token': 0.00000174,
       'output_cost_per_token': 0.00000348,
       'cache_read_input_token_cost': 0.0000000145
     },
-    'deepseek-v4-flash': {
+    'deepseek-v4.1-flash': {
       'input_cost_per_token': 0.00000014,
       'output_cost_per_token': 0.00000028,
       'cache_read_input_token_cost': 0.0000000028
     },
-    'glm-5.2': {
+    'glm-5.3': {
       'input_cost_per_token': 0.0000014,
       'output_cost_per_token': 0.0000044,
       'cache_read_input_token_cost': 0.00000026
@@ -211,57 +175,23 @@
       'cache_read_input_token_cost': 0.0000005
     }
   },
-  'nanogpt': {
-    'deepseek-v4-pro': {
-      'input_cost_per_token': 0.0000011,
-      'output_cost_per_token': 0.0000022,
-      'cache_read_input_token_cost': 0.00000000011
-    },
-    'deepseek-v4-flash': {
-      'input_cost_per_token': 0.00000014,
-      'output_cost_per_token': 0.00000028,
-      'cache_read_input_token_cost': 0.0000000000028
-    },
-    'glm-5.2': {
-      'input_cost_per_token': 0.00000042,
-      'output_cost_per_token': 0.00000132,
-      'cache_read_input_token_cost': 0.000000000078
-    },
-    'kimi-k2.7-code': {
-      'input_cost_per_token': 0.00000095,
-      'output_cost_per_token': 0.000004,
-      'cache_read_input_token_cost': 0.00000000019
-    },
-    'mimo-v2.5': {
-      'input_cost_per_token': 0.00000014,
-      'output_cost_per_token': 0.00000028,
-      'cache_creation_input_token_cost': 0.0,
-      'cache_read_input_token_cost': 0.0000000000028
-    },
-    'mimo-v2.5-pro': {
-      'input_cost_per_token': 0.000000435,
-      'output_cost_per_token': 0.00000087,
-      'cache_creation_input_token_cost': 0.0,
-      'cache_read_input_token_cost': 0.0000000000036
-    },
-    'minimax-m3': {
-      'input_cost_per_token': 0.0000003,
-      'output_cost_per_token': 0.0000012,
-      'cache_read_input_token_cost': 0.00000000006
-    },
-  },
   'ollama': {
     'deepseek-v4-pro': {
       'input_cost_per_token': 0.0000011,
       'output_cost_per_token': 0.0000022,
       'cache_read_input_token_cost': 0.00000000011
     },
-    'deepseek-v4-flash': {
+    'deepseek-v4.1-flash': {
       'input_cost_per_token': 0.00000014,
       'output_cost_per_token': 0.00000028,
       'cache_read_input_token_cost': 0.0000000000028
     },
-    'glm-5.2': {
+    'glm-5.3': {
+      'input_cost_per_token': 0.00000042,
+      'output_cost_per_token': 0.00000132,
+      'cache_read_input_token_cost': 0.000000000078
+    },
+    'glm-5.3-flash': {
       'input_cost_per_token': 0.00000042,
       'output_cost_per_token': 0.00000132,
       'cache_read_input_token_cost': 0.000000000078
@@ -280,6 +210,59 @@
       'input_cost_per_token': 0.0000003,
       'output_cost_per_token': 0.0000012,
       'cache_read_input_token_cost': 0.00000000006
+    }
+  },
+  'commandcode': {
+    'deepseek-v4-pro': {
+      'input_cost_per_token': 0.000000435,
+      'output_cost_per_token': 0.00000087,
+      'cache_read_input_token_cost': 0.000000003625
+    },
+    'deepseek-v4.1-flash': {
+      'input_cost_per_token': 0.00000015,
+      'output_cost_per_token': 0.0000006,
+      'cache_read_input_token_cost': 0.000000003
+    },
+    'glm-5.3': {
+      'input_cost_per_token': 0.0000014,
+      'output_cost_per_token': 0.0000044,
+      'cache_read_input_token_cost': 0.00000026
+    },
+    'glm-5.3-flash': {
+      'input_cost_per_token': 0.00000015,
+      'output_cost_per_token': 0.0000005,
+      'cache_read_input_token_cost': 0.00000003
+    },
+    'kimi-k2.7-code': {
+      'input_cost_per_token': 0.00000095,
+      'output_cost_per_token': 0.000004,
+      'cache_read_input_token_cost': 0.00000019
+    },
+    'kimi-k3': {
+      'input_cost_per_token': 0.000003,
+      'output_cost_per_token': 0.000015,
+      'cache_read_input_token_cost': 0.0000003
+    },
+    'mimo-v2.5': {
+      'input_cost_per_token': 0.00000014,
+      'output_cost_per_token': 0.00000028,
+      'cache_read_input_token_cost': 0.0000000028
+    },
+    'mimo-v2.5-pro': {
+      'input_cost_per_token': 0.000000435,
+      'output_cost_per_token': 0.00000087,
+      'cache_read_input_token_cost': 0.0000000036
+    },
+    'minimax-m3': {
+      'input_cost_per_token': 0.0000003,
+      'output_cost_per_token': 0.0000012,
+      'cache_read_input_token_cost': 0.00000006
+    },
+    'qwen3.8-max': {
+      'input_cost_per_token': 0.000002,
+      'output_cost_per_token': 0.000006,
+      'cache_creation_input_token_cost': 0.0000025,
+      'cache_read_input_token_cost': 0.00000025
     }
   }
 }
@@ -320,7 +303,7 @@ model_list:
       supports_prompt_caching: true
       disable_background_health_check: true
     litellm_params:
-      model: hosted_vllm/qwen3.6
+      model: hosted_vllm/qwen3.8
       api_key: no-api-key
       api_base: {{ vault_custom_coding_api_base }}
       temperature: 1.0
@@ -351,7 +334,7 @@ model_list:
       supports_prompt_caching: true
       disable_background_health_check: true
     litellm_params:
-      model: hosted_vllm/qwen3.6
+      model: hosted_vllm/qwen3.8
       api_key: no-api-key
       api_base: {{ vault_custom_agentic_api_base }}
       temperature: 1.0
@@ -384,7 +367,7 @@ model_list:
       supports_prompt_caching: true
       disable_background_health_check: true
     litellm_params:
-      model: hosted_vllm/gemma-4-12B-it
+      model: hosted_vllm/fast
       api_key: no-api-key
       api_base: {{ vault_custom_fast_api_base }}
       thinking:
@@ -399,156 +382,6 @@ model_list:
         options:
           num_ctx: 128000
 
-  # Opencode models
-  - model_name: deepseek-v4-pro
-    model_info:
-{{ litellm_model_info('deepseek-v4-pro', 'opencode') }}
-    litellm_params:
-      model: deepseek/deepseek-v4-pro
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go/v1
-
-  - model_name: deepseek-v4-flash
-    model_info:
-{{ litellm_model_info('deepseek-v4-flash', 'opencode') }}
-    litellm_params:
-      model: deepseek/deepseek-v4-flash
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go/v1
-
-  - model_name: deepseek-v4-flash-free
-    model_info:
-      input_cost_per_token: 0.0
-      output_cost_per_token: 0.0
-      cache_read_input_token_cost: 0.0
-      max_input_tokens: 1048576
-      max_output_tokens: 384000
-      max_tokens: 384000
-      mode: chat
-      supports_function_calling: true
-      supports_reasoning: true
-      supports_tool_choice: true
-      supports_response_schema: false
-      supports_prompt_caching: true
-      reasoning_effort: high
-    litellm_params:
-      model: deepseek/deepseek-v4-flash-free
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/v1
-
-  - model_name: glm-5.3
-    model_info:
-      input_cost_per_token: 0.0000014
-      output_cost_per_token: 0.0000044
-      cache_read_input_token_cost: 0.00000026
-      max_input_tokens: 1000000
-      max_output_tokens: 128000
-      max_tokens: 128000
-      mode: chat
-      supports_function_calling: true
-      supports_reasoning: true
-      supports_tool_choice: true
-      supports_response_schema: false
-      supports_prompt_caching: true
-    litellm_params:
-      model: zai/glm-5.3
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go/v1
-
-  - model_name: glm-5.2
-    model_info:
-{{ litellm_model_info('glm-5.2', 'opencode') }}
-    litellm_params:
-      model: zai/glm-5.2
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go/v1
-
-  - model_name: kimi-k2.7-code
-    model_info:
-{{ litellm_model_info('kimi-k2.7-code', 'opencode') }}
-    litellm_params:
-      model: moonshot/kimi-k2.7-code
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go/v1
-
-  - model_name: kimi-k3
-    model_info:
-{{ litellm_model_info('kimi-k3', 'opencode') }}
-    litellm_params:
-      model: moonshot/kimi-k3
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go/v1
-
-  - model_name: mimo-v2.5
-    model_info:
-{{ litellm_model_info('mimo-v2.5', 'opencode') }}
-    litellm_params:
-      model: xiaomi_mimo/mimo-v2.5
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go/v1
-
-  - model_name: mimo-v2.5-pro
-    model_info:
-{{ litellm_model_info('mimo-v2.5-pro', 'opencode') }}
-    litellm_params:
-      model: xiaomi_mimo/mimo-v2.5-pro
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go/v1
-
-  - model_name: minimax-m3
-    model_info:
-{{ litellm_model_info('minimax-m3', 'opencode') }}
-    litellm_params:
-      model: minimax/minimax-m3
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go
-
-  - model_name: qwen3.8-max
-    model_info:
-{{ litellm_model_info('qwen3.8-max', 'opencode') }}
-    litellm_params:
-      model: anthropic/qwen3.8-max
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go
-
-  - model_name: grok-4.5
-    model_info:
-      input_cost_per_token: 0.000002
-      output_cost_per_token: 0.000006
-      cache_read_input_token_cost: 0.0000005
-      max_input_tokens: 500000
-      max_output_tokens: 500000
-      max_tokens: 500000
-      mode: chat
-      supports_function_calling: true
-      supports_tool_choice: true
-      supports_reasoning: true
-      supports_vision: true
-      supports_prompt_caching: true
-    litellm_params:
-      model: xai/grok-4.5
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go/v1
-
-  - model_name: gpt-5.6-luna
-    model_info:
-      input_cost_per_token: 0.0000002
-      output_cost_per_token: 0.0000012
-      cache_read_input_token_cost: 0.00000002
-      max_input_tokens: 1050000
-      max_output_tokens: 128000
-      max_tokens: 1050000
-      mode: chat
-      supports_function_calling: true
-      supports_tool_choice: true
-      supports_reasoning: true
-      supports_vision: true
-      supports_prompt_caching: true
-    litellm_params:
-      model: openai/gpt-5.6-luna
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/go/v1
-
   # Cline Pass models
   - model_name: deepseek-v4-pro
     model_info:
@@ -559,20 +392,20 @@ model_list:
       api_base: https://api.cline.bot/api/v1
       stream: true
 
-  - model_name: deepseek-v4-flash
+  - model_name: deepseek-v4.1-flash
     model_info:
-{{ litellm_model_info('deepseek-v4-flash', 'cline') }}
+{{ litellm_model_info('deepseek-v4.1-flash', 'cline') }}
     litellm_params:
-      model: deepseek/cline-pass/deepseek-v4-flash
+      model: deepseek/cline-pass/deepseek-v4.1-flash
       api_key: os.environ/CLINE_API_KEY
       api_base: https://api.cline.bot/api/v1
       stream: true
 
-  - model_name: glm-5.2
+  - model_name: glm-5.3
     model_info:
-{{ litellm_model_info('glm-5.2', 'cline') }}
+{{ litellm_model_info('glm-5.3', 'cline') }}
     litellm_params:
-      model: zai/cline-pass/glm-5.2
+      model: zai/cline-pass/glm-5.3
       api_key: os.environ/CLINE_API_KEY
       api_base: https://api.cline.bot/api/v1
       stream: true
@@ -631,70 +464,6 @@ model_list:
       api_base: https://api.cline.bot/api/v1
       stream: true
 
-  # Nano GPT models
-  - model_name: deepseek-v4-pro
-    model_info:
-{{ litellm_model_info('deepseek-v4-pro', 'nanogpt') }}
-    litellm_params:
-      model: nano-gpt/deepseek/deepseek-v4-pro-0813
-      api_key: os.environ/NANOGPT_API_KEY
-      api_base: https://nano-gpt.com/api/v1
-      stream: true
-
-  - model_name: deepseek-v4-flash
-    model_info:
-{{ litellm_model_info('deepseek-v4-flash', 'nanogpt') }}
-    litellm_params:
-      model: nano-gpt/deepseek/deepseek-v4-flash-latest
-      api_key: os.environ/NANOGPT_API_KEY
-      api_base: https://nano-gpt.com/api/v1
-      stream: true
-
-  - model_name: glm-5.2
-    model_info:
-{{ litellm_model_info('glm-5.2', 'nanogpt') }}
-    litellm_params:
-      model: nano-gpt/zai-org/glm-5.2
-      api_key: os.environ/NANOGPT_API_KEY
-      api_base: https://nano-gpt.com/api/v1
-      stream: true
-
-  - model_name: kimi-k2.7-code
-    model_info:
-{{ litellm_model_info('kimi-k2.7-code', 'nanogpt') }}
-    litellm_params:
-      model: nano-gpt/moonshotai/kimi-k2.7-code
-      api_key: os.environ/NANOGPT_API_KEY
-      api_base: https://nano-gpt.com/api/v1
-      stream: true
-
-  - model_name: mimo-v2.5
-    model_info:
-{{ litellm_model_info('mimo-v2.5', 'nanogpt') }}
-    litellm_params:
-      model: nano-gpt/xiaomi/mimo-v2.5
-      api_key: os.environ/NANOGPT_API_KEY
-      api_base: https://nano-gpt.com/api/v1
-      stream: true
-
-  - model_name: mimo-v2.5-pro
-    model_info:
-{{ litellm_model_info('mimo-v2.5-pro', 'nanogpt') }}
-    litellm_params:
-      model: nano-gpt/xiaomi/mimo-v2.5-pro
-      api_key: os.environ/NANOGPT_API_KEY
-      api_base: https://nano-gpt.com/api/v1
-      stream: true
-
-  - model_name: minimax-m3
-    model_info:
-{{ litellm_model_info('minimax-m3', 'nanogpt') }}
-    litellm_params:
-      model: nano-gpt/minimax/minimax-m3
-      api_key: os.environ/NANOGPT_API_KEY
-      api_base: https://nano-gpt.com/api/v1
-      stream: true
-
   # Ollama models
   - model_name: deepseek-v4-pro
     model_info:
@@ -704,19 +473,19 @@ model_list:
       api_key: os.environ/OLLAMA_API_KEY
       api_base: https://ollama.com/api/chat
       keep_alive: "10m"
-  - model_name: deepseek-v4-flash
+  - model_name: deepseek-v4.1-flash
     model_info:
-{{ litellm_model_info('deepseek-v4-flash', 'ollama') }}
+{{ litellm_model_info('deepseek-v4.1-flash', 'ollama') }}
     litellm_params:
-      model: ollama_chat/deepseek-v4-flash:0731
+      model: ollama_chat/deepseek-v4.1-flash
       api_key: os.environ/OLLAMA_API_KEY
       api_base: https://ollama.com/api/chat
       keep_alive: "10m"
-  - model_name: glm-5.2
+  - model_name: glm-5.3
     model_info:
-{{ litellm_model_info('glm-5.2', 'ollama') }}
+{{ litellm_model_info('glm-5.3', 'ollama') }}
     litellm_params:
-      model: ollama_chat/glm-5.2
+      model: ollama_chat/glm-5.3
       api_key: os.environ/OLLAMA_API_KEY
       api_base: https://ollama.com/api/chat
       keep_alive: "10m"
@@ -744,47 +513,99 @@ model_list:
       api_key: os.environ/OLLAMA_API_KEY
       api_base: https://ollama.com/api/chat
       keep_alive: "10m"
-  # OpenCode zen OpenAI models (generated)
-  - model_name: mimo-v2.5-free
-    litellm_params:
-      model: xiaomi_mimo/mimo-v2.5-free
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/v1
 
-  - model_name: hy3-free
+  # Command Code models. The openai/ route is deliberate: Command Code
+  # addresses models by vendor-prefixed id, and any native provider prefix
+  # would strip that segment before the request leaves the proxy.
+  - model_name: deepseek-v4-pro
     model_info:
-      max_input_tokens: 256000
-      max_output_tokens: 32000
-      mode: chat
-      supports_function_calling: true
-      supports_reasoning: true
-      supports_tool_choice: true
-      supports_prompt_caching: true
+{{ litellm_model_info('deepseek-v4-pro', 'commandcode') }}
     litellm_params:
-      model: tencent/hy3-free
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/v1
+      model: openai/deepseek/deepseek-v4-pro
+      api_key: os.environ/COMMANDCODE_API_KEY
+      api_base: https://api.commandcode.ai/provider/v1
+      stream: true
 
-  - model_name: muse-spark-1.2-free
+  - model_name: deepseek-v4.1-flash
     model_info:
-      max_input_tokens: 1048576
-      max_output_tokens: 128000
-      mode: chat
-      supports_function_calling: true
-      supports_reasoning: true
-      supports_tool_choice: true
-      supports_prompt_caching: true
+{{ litellm_model_info('deepseek-v4.1-flash', 'commandcode') }}
     litellm_params:
-      model: meta/muse-spark-1.2-contributor-free
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/v1
-      supported_endpoints: ["/v1/responses"]
+      model: openai/deepseek/deepseek-v4.1-flash
+      api_key: os.environ/COMMANDCODE_API_KEY
+      api_base: https://api.commandcode.ai/provider/v1
+      stream: true
 
-  - model_name: nemotron-3-ultra-free
+  - model_name: glm-5.3
+    model_info:
+{{ litellm_model_info('glm-5.3', 'commandcode') }}
     litellm_params:
-      model: openrouter/nemotron-3-ultra-free
-      api_key: os.environ/OPENCODE_API_KEY
-      api_base: https://opencode.ai/zen/v1
+      model: openai/zai-org/GLM-5.3
+      api_key: os.environ/COMMANDCODE_API_KEY
+      api_base: https://api.commandcode.ai/provider/v1
+      stream: true
+
+  - model_name: glm-5.3-flash
+    model_info:
+{{ litellm_model_info('glm-5.3-flash', 'commandcode') }}
+    litellm_params:
+      model: openai/z-ai/glm-5.3-flash
+      api_key: os.environ/COMMANDCODE_API_KEY
+      api_base: https://api.commandcode.ai/provider/v1
+      stream: true
+
+  - model_name: kimi-k2.7-code
+    model_info:
+{{ litellm_model_info('kimi-k2.7-code', 'commandcode') }}
+    litellm_params:
+      model: openai/moonshotai/Kimi-K2.7-Code
+      api_key: os.environ/COMMANDCODE_API_KEY
+      api_base: https://api.commandcode.ai/provider/v1
+      stream: true
+
+  - model_name: kimi-k3
+    model_info:
+{{ litellm_model_info('kimi-k3', 'commandcode') }}
+    litellm_params:
+      model: openai/moonshotai/Kimi-K3
+      api_key: os.environ/COMMANDCODE_API_KEY
+      api_base: https://api.commandcode.ai/provider/v1
+      stream: true
+
+  - model_name: mimo-v2.5
+    model_info:
+{{ litellm_model_info('mimo-v2.5', 'commandcode') }}
+    litellm_params:
+      model: openai/xiaomi/mimo-v2.5
+      api_key: os.environ/COMMANDCODE_API_KEY
+      api_base: https://api.commandcode.ai/provider/v1
+      stream: true
+
+  - model_name: mimo-v2.5-pro
+    model_info:
+{{ litellm_model_info('mimo-v2.5-pro', 'commandcode') }}
+    litellm_params:
+      model: openai/xiaomi/mimo-v2.5-pro
+      api_key: os.environ/COMMANDCODE_API_KEY
+      api_base: https://api.commandcode.ai/provider/v1
+      stream: true
+
+  - model_name: minimax-m3
+    model_info:
+{{ litellm_model_info('minimax-m3', 'commandcode') }}
+    litellm_params:
+      model: openai/MiniMaxAI/MiniMax-M3
+      api_key: os.environ/COMMANDCODE_API_KEY
+      api_base: https://api.commandcode.ai/provider/v1
+      stream: true
+
+  - model_name: qwen3.8-max
+    model_info:
+{{ litellm_model_info('qwen3.8-max', 'commandcode') }}
+    litellm_params:
+      model: openai/Qwen/Qwen3.8-Max
+      api_key: os.environ/COMMANDCODE_API_KEY
+      api_base: https://api.commandcode.ai/provider/v1
+      stream: true
 
   # OpenRouter models (generated)
   - model_name: nvidia-nemotron-3-super-free
@@ -823,6 +644,7 @@ model_list:
       api_key: os.environ/OPENROUTER_API_KEY
       api_base: https://openrouter.ai/api/v1
 
+{% if headroom_enabled | bool %}
 guardrails:
   - guardrail_name: headroom-compression
     litellm_params:
@@ -832,6 +654,7 @@ guardrails:
       api_key: os.environ/HEADROOM_API_KEY
       default_on: false
 
+{% endif %}
 rate_limit:
   enabled: false
 
@@ -912,14 +735,14 @@ router_settings:
       routing_strategy_args:
         ttl: 300
         lowest_latency_buffer: 0.5
-    - group_name: deepseek-v4-flash-group
-      models: [deepseek-v4-flash]
+    - group_name: deepseek-v4.1-flash-group
+      models: [deepseek-v4.1-flash]
       routing_strategy: latency-based-routing
       routing_strategy_args:
         ttl: 300
         lowest_latency_buffer: 0.5
-    - group_name: glm-5.2-group
-      models: [glm-5.2]
+    - group_name: glm-5.3-group
+      models: [glm-5.3]
       routing_strategy: latency-based-routing
       routing_strategy_args:
         ttl: 300
@@ -962,13 +785,17 @@ router_settings:
         lowest_latency_buffer: 0.5
   fallbacks:
     - openai/gemma-4-12B-it:
-        - hy3-free
+        - deepseek-v4.1-flash
     - agentic:
-        - deepseek-v4-flash
+        - deepseek-v4.1-flash
     - coding:
-        - kimi-k2.7-code
+        - glm-5.3-flash
     - fast:
-        - hy3-free
+        - deepseek-v4.1-flash
+    # A deployment can answer with a body that carries no choices (Cline does
+    # this intermittently), which fails the whole group. Fall back to a sibling.
+    - deepseek-v4.1-flash:
+        - deepseek-v4-pro
   enable_pre_call_checks: true
   num_retries: 1
   retry_after: 600
@@ -977,7 +804,7 @@ router_settings:
   cooldown_time: 300
   context_window_fallbacks:
     - agentic:
-        - deepseek-v4-flash
+        - deepseek-v4.1-flash
     - coding:
         - kimi-k2.7-code
     - fast:

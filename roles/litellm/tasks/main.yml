@@ -14,6 +14,7 @@
       - vault_custom_embedding_api_base is defined
       - vault_opencode_api_key is defined
       - vault_cline_api_key is defined
+      - vault_commandcode_api_key is defined
       - vault_openrouter_api_key is defined
       - vault_exa_api_key is defined
       - vault_firecrawl_api_key is defined
@@ -97,6 +98,7 @@
     mode: "0644"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
+  notify: Recreate stack
 
 - name: Locate podman-compose binary
   ansible.builtin.command: "command -v podman-compose"

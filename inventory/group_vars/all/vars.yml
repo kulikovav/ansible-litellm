@@ -23,9 +23,10 @@ litellm_nginx_conf: "/etc/nginx/conf.d/litellm.conf"
 # ---------------------------------------------------------------------------
 # Container images
 # ---------------------------------------------------------------------------
-# LiteLLM "latest": the rolling tag. Pin to a vX.Y.Z release tag (e.g.
-# ghcr.io/berriai/litellm-database:v1.96.2) for deterministic rollbacks.
-litellm_image: "ghcr.io/berriai/litellm-database:latest"
+# LiteLLM image, pinned to a release tag so upgrades and rollbacks are explicit.
+# Bump this line to move to a new release; the rolling "latest" tag pointed at
+# v1.101.0 when this pin was set.
+litellm_image: "ghcr.io/berriai/litellm-database:v1.101.0"
 postgres_image: "docker.io/library/postgres:16-alpine"
 redis_image: "docker.io/library/redis:7-alpine"
 
@@ -71,7 +72,9 @@ litellm_headroom_api_base: "http://headroom:8787"
 
 # ---------------------------------------------------------------------------
 # Headroom compression proxy — matches beekube headroom.tf
+# Opt-in: the sidecar pod and its guardrail are skipped unless this is true.
 # ---------------------------------------------------------------------------
+headroom_enabled: false
 headroom_image: "ghcr.io/headroomlabs-ai/headroom:0.35.0"
 headroom_port: 8787
 headroom_mode: "cache"
@@ -84,14 +87,14 @@ headroom_proxy_token: "{{ vault_headroom_proxy_token }}"
 # ---------------------------------------------------------------------------
 # Provider API keys (os.environ references in config.yaml)
 # ---------------------------------------------------------------------------
-opencode_api_key: "{{ vault_opencode_api_key }}"
 cline_api_key: "{{ vault_cline_api_key }}"
+commandcode_api_key: "{{ vault_commandcode_api_key }}"
 openrouter_api_key: "{{ vault_openrouter_api_key }}"
 exa_api_key: "{{ vault_exa_api_key }}"
 firecrawl_api_key: "{{ vault_firecrawl_api_key }}"
 headroom_api_key: "{{ vault_headroom_api_key }}"
-nanogpt_api_key: "{{ vault_nanogpt_api_key }}"
 context7_api_key: "{{ vault_context7_api_key }}"
+ollama_api_key: "{{ vault_ollama_api_key }}"
 
 # ---------------------------------------------------------------------------
 # Resend email notifications (resend_email callback)
