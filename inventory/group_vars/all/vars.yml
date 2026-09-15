@@ -38,8 +38,9 @@ nginx_https_port: 443
 litellm_port: 4000
 
 # ---------------------------------------------------------------------------
-# Nginx access control — public endpoint restricted to these IPs.
-# The acme.sh HTTP-01 challenge path stays open for Let's Encrypt validation.
+# Nginx access control — the site root is restricted to these IPs. The /v1 API
+# answers from any IP over HTTPS, and the acme.sh HTTP-01 challenge path stays
+# open for Let's Encrypt validation.
 # ---------------------------------------------------------------------------
 litellm_allowed_ips: "{{ vault_litellm_allowed_ips }}"
 

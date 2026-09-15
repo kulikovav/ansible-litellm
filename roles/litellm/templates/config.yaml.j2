@@ -3,12 +3,14 @@
    costs differ per provider. litellm_model_info() combines both into the
    rendered model_info block. Costs are USD per token; the Command Code block
    uses https://commandcode.ai/models rates with its active deals already
-   applied (checked 2026-09-15), so it is lower than vendor list prices. -#}
+   applied (checked 2026-09-15), so it is lower than vendor list prices.
+   deepseek-v4-pro carries a 65536 output cap because Ollama rejects more for
+   deepseek-v4-pro:0813. -#}
 {% set litellm_model_caps = {
   'deepseek-v4-pro': {
     'max_input_tokens': 1048576,
-    'max_output_tokens': 64000,
-    'max_tokens': 64000,
+    'max_output_tokens': 65536,
+    'max_tokens': 65536,
     'mode': 'chat',
     'supports_function_calling': True,
     'supports_reasoning': True,
@@ -489,6 +491,14 @@ model_list:
       api_key: os.environ/OLLAMA_API_KEY
       api_base: https://ollama.com/api/chat
       keep_alive: "10m"
+  - model_name: glm-5.3-flash
+    model_info:
+{{ litellm_model_info('glm-5.3-flash', 'ollama') }}
+    litellm_params:
+      model: ollama_chat/glm-5.3-flash
+      api_key: os.environ/OLLAMA_API_KEY
+      api_base: https://ollama.com/api/chat
+      keep_alive: "10m"
   - model_name: kimi-k2.7-code
     model_info:
 {{ litellm_model_info('kimi-k2.7-code', 'ollama') }}
@@ -747,6 +757,12 @@ router_settings:
       routing_strategy_args:
         ttl: 300
         lowest_latency_buffer: 0.5
+    - group_name: glm-5.3-flash-group
+      models: [glm-5.3-flash]
+      routing_strategy: latency-based-routing
+      routing_strategy_args:
+        ttl: 300
+        lowest_latency_buffer: 0.5
     - group_name: kimi-k2.7-code-group
       models: [kimi-k2.7-code]
       routing_strategy: latency-based-routing
@@ -784,8 +800,6 @@ router_settings:
         ttl: 300
         lowest_latency_buffer: 0.5
   fallbacks:
-    - openai/gemma-4-12B-it:
-        - deepseek-v4.1-flash
     - agentic:
         - deepseek-v4.1-flash
     - coding:
@@ -808,6 +822,6 @@ router_settings:
     - coding:
         - kimi-k2.7-code
     - fast:
-        - hy3-free
+        - deepseek-v4.1-flash
   model_group_alias:
     embedding: openai/qwen3-embedding-0.6b

@@ -5,14 +5,14 @@ Ansible playbook that installs the latest LiteLLM proxy and its dependencies on
 
 ## Components
 
-| Component  | Image                                     | Purpose                             |
-| ---------- | ----------------------------------------- | ----------------------------------- |
-| LiteLLM    | `ghcr.io/berriai/litellm-database:latest` | OpenAI-compatible proxy             |
-| Headroom   | `ghcr.io/headroomlabs-ai/headroom:0.35.0` | Prompt compression sidecar (opt-in) |
-| PostgreSQL | `postgres:16-alpine`                      | Keys, users, spend logs             |
-| Redis      | `redis:7-alpine`                          | Response cache + auth cache (AOF)   |
-| Nginx      | host `nginx` (Rocky Linux)                | TLS termination + reverse proxy     |
-| acme.sh    | `neilpang/acme.sh` (installed via script) | TLS cert (HTTP-01 webroot)          |
+| Component  | Image                                       | Purpose                             |
+| ---------- | ------------------------------------------- | ----------------------------------- |
+| LiteLLM    | `ghcr.io/berriai/litellm-database:v1.101.0` | OpenAI-compatible proxy             |
+| Headroom   | `ghcr.io/headroomlabs-ai/headroom:0.35.0`   | Prompt compression sidecar (opt-in) |
+| PostgreSQL | `postgres:16-alpine`                        | Keys, users, spend logs             |
+| Redis      | `redis:7-alpine`                            | Response cache + auth cache (AOF)   |
+| Nginx      | host `nginx` (Rocky Linux)                  | TLS termination + reverse proxy     |
+| acme.sh    | `neilpang/acme.sh` (installed via script)   | TLS cert (HTTP-01 webroot)          |
 
 The containers run rootless under the `opc` user via `podman-compose`, managed by
 a systemd user unit (`litellm-stack.service`). The host already runs nginx
@@ -83,6 +83,7 @@ roles/
 - HTTP-01 requires `fqdn` to resolve to this host and port 80
   to be publicly reachable. The playbook installs a self-signed placeholder cert,
   then acme.sh issues the real cert and reloads the host nginx.
-- The public endpoint is IP-restricted to `litellm_allowed_ips` (default
-  `127.0.0.1`); all other IPs get `403`. The `/.well-known/acme-challenge/`
-  path stays open for certificate validation.
+- The `/v1` API is not IP-restricted: over HTTPS it answers from any source IP
+  and the master key is the only gate. The site root stays restricted to
+  `litellm_allowed_ips` (default `127.0.0.1`), where other IPs get `403`. The
+  `/.well-known/acme-challenge/` path stays open for certificate validation.
