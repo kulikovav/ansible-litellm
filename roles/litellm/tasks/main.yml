@@ -12,12 +12,11 @@
       - vault_custom_agentic_api_base is defined
       - vault_custom_fast_api_base is defined
       - vault_custom_embedding_api_base is defined
-      - vault_opencode_api_key is defined
       - vault_cline_api_key is defined
+      - vault_commandcode_api_key is defined
       - vault_openrouter_api_key is defined
       - vault_exa_api_key is defined
       - vault_firecrawl_api_key is defined
-      - vault_nanogpt_api_key is defined
       - vault_context7_api_key is defined
       - vault_headroom_api_key is defined
       - vault_headroom_proxy_token is defined
@@ -97,6 +96,7 @@
     mode: "0644"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
+  notify: Recreate stack
 
 - name: Locate podman-compose binary
   ansible.builtin.command: "command -v podman-compose"

@@ -53,6 +53,7 @@ services:
       start_period: 60s
     restart: unless-stopped
 
+{% if headroom_enabled | bool %}
   headroom:
     image: {{ headroom_image }}
     container_name: litellm-headroom
@@ -94,8 +95,11 @@ services:
       retries: 3
       start_period: 20s
     restart: unless-stopped
+{% endif %}
 
 volumes:
   postgres-data:
   redis-data:
+{% if headroom_enabled | bool %}
   headroom-data:
+{% endif %}

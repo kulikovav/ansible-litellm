@@ -9,3 +9,11 @@
     cmd: "podman-compose -f {{ litellm_config_dir }}/compose.yml up -d --force-recreate --no-deps litellm"
   become: false
   changed_when: true
+
+- name: Recreate stack
+  # --remove-orphans drops services that a re-render removed from compose.yml
+  # (for example headroom when headroom_enabled goes back to false).
+  ansible.builtin.command:
+    cmd: "podman-compose -f {{ litellm_config_dir }}/compose.yml up -d --remove-orphans"
+  become: false
+  changed_when: true
