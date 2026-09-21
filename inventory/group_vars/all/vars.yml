@@ -107,3 +107,7 @@ resend_from_email: "{{ vault_resend_from_email }}"
 # ---------------------------------------------------------------------------
 acme_email: "{{ vault_acme_email }}"
 acme_webroot: "{{ litellm_acme_dir }}/webroot"
+# Integrity pin for the installer downloaded from https://get.acme.sh.
+# The playbook fails if upstream changes the script; re-verify the new
+# script manually, then update this hash.
+acme_install_sha256: "8681df828f7765a351a4fc708a46fc3f7f383c0155fe4b19002d20e5c4ee5431"

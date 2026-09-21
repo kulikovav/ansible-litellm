@@ -15,6 +15,7 @@
     url: https://get.acme.sh
     dest: "{{ litellm_user_home }}/acme.sh-install.sh"
     mode: "0755"
+    checksum: "sha256:{{ acme_install_sha256 }}"
   become: false
 
 - name: Install acme.sh
