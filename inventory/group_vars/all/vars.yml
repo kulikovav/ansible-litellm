@@ -24,9 +24,8 @@ litellm_nginx_conf: "/etc/nginx/conf.d/litellm.conf"
 # Container images
 # ---------------------------------------------------------------------------
 # LiteLLM image, pinned to a release tag so upgrades and rollbacks are explicit.
-# Bump this line to move to a new release; the rolling "latest" tag pointed at
-# v1.101.0 when this pin was set.
-litellm_image: "ghcr.io/berriai/litellm-database:v1.101.0"
+# Bump this line to move to a new release.
+litellm_image: "ghcr.io/berriai/litellm-database:v1.103.0-rc.1"
 postgres_image: "docker.io/library/postgres:16-alpine"
 redis_image: "docker.io/library/redis:7-alpine"
 
@@ -108,3 +107,7 @@ resend_from_email: "{{ vault_resend_from_email }}"
 # ---------------------------------------------------------------------------
 acme_email: "{{ vault_acme_email }}"
 acme_webroot: "{{ litellm_acme_dir }}/webroot"
+# Integrity pin for the installer downloaded from https://get.acme.sh.
+# The playbook fails if upstream changes the script; re-verify the new
+# script manually, then update this hash.
+acme_install_sha256: "8681df828f7765a351a4fc708a46fc3f7f383c0155fe4b19002d20e5c4ee5431"

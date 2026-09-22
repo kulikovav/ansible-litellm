@@ -34,9 +34,17 @@ server {
 
     ssl_certificate     {{ litellm_acme_dir }}/certs/fullchain.pem;
     ssl_certificate_key {{ litellm_acme_dir }}/certs/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305;
+    ssl_session_cache   shared:litellm:10m;
+    ssl_session_timeout 1d;
+    ssl_session_tickets off;
 
     server_tokens off;
     client_max_body_size 10m;
+
+    # HSTS: force HTTPS for one year, including any subdomains.
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
     location / {
 {% for ip in litellm_allowed_ips %}

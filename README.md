@@ -5,14 +5,14 @@ Ansible playbook that installs the latest LiteLLM proxy and its dependencies on
 
 ## Components
 
-| Component  | Image                                       | Purpose                             |
-| ---------- | ------------------------------------------- | ----------------------------------- |
-| LiteLLM    | `ghcr.io/berriai/litellm-database:v1.101.0` | OpenAI-compatible proxy             |
-| Headroom   | `ghcr.io/headroomlabs-ai/headroom:0.35.0`   | Prompt compression sidecar (opt-in) |
-| PostgreSQL | `postgres:16-alpine`                        | Keys, users, spend logs             |
-| Redis      | `redis:7-alpine`                            | Response cache + auth cache (AOF)   |
-| Nginx      | host `nginx` (Rocky Linux)                  | TLS termination + reverse proxy     |
-| acme.sh    | `neilpang/acme.sh` (installed via script)   | TLS cert (HTTP-01 webroot)          |
+| Component  | Image                                            | Purpose                             |
+| ---------- | ------------------------------------------------ | ----------------------------------- |
+| LiteLLM    | `ghcr.io/berriai/litellm-database:v1.103.0-rc.1` | OpenAI-compatible proxy             |
+| Headroom   | `ghcr.io/headroomlabs-ai/headroom:0.35.0`        | Prompt compression sidecar (opt-in) |
+| PostgreSQL | `postgres:16-alpine`                             | Keys, users, spend logs             |
+| Redis      | `redis:7-alpine`                                 | Response cache + auth cache (AOF)   |
+| Nginx      | host `nginx` (Rocky Linux)                       | TLS termination + reverse proxy     |
+| acme.sh    | `neilpang/acme.sh` (installed via script)        | TLS cert (HTTP-01 webroot)          |
 
 The containers run rootless under the `opc` user via `podman-compose`, managed by
 a systemd user unit (`litellm-stack.service`). The host already runs nginx
@@ -63,7 +63,7 @@ roles/
 
 ## Notes
 
-- `litellm_image` is pinned to a release tag (`litellm-database:v1.101.0`) so
+- `litellm_image` is pinned to a release tag (`litellm-database:v1.103.0-rc.1`) so
   upgrades and rollbacks are explicit. Bump that variable to move version, and
   confirm the running build with
   `podman exec litellm python -c "import importlib.metadata as m; print(m.version('litellm'))"`.
