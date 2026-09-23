@@ -338,6 +338,7 @@ model_list:
       api_key: os.environ/CLINE_API_KEY
       api_base: https://api.cline.bot/api/v1
       stream: true
+      order: 1
 
   - model_name: glm-5.3
     model_info:
@@ -347,6 +348,7 @@ model_list:
       api_key: os.environ/CLINE_API_KEY
       api_base: https://api.cline.bot/api/v1
       stream: true
+      order: 1
 
   - model_name: kimi-k3
     model_info:
@@ -356,6 +358,7 @@ model_list:
       api_key: os.environ/CLINE_API_KEY
       api_base: https://api.cline.bot/api/v1
       stream: true
+      order: 1
 
   - model_name: mimo-v2.5
     model_info:
@@ -365,6 +368,7 @@ model_list:
       api_key: os.environ/CLINE_API_KEY
       api_base: https://api.cline.bot/api/v1
       stream: true
+      order: 1
 
   - model_name: mimo-v2.5-pro
     model_info:
@@ -374,6 +378,7 @@ model_list:
       api_key: os.environ/CLINE_API_KEY
       api_base: https://api.cline.bot/api/v1
       stream: true
+      order: 1
 
   - model_name: minimax-m3
     model_info:
@@ -383,6 +388,7 @@ model_list:
       api_key: os.environ/CLINE_API_KEY
       api_base: https://api.cline.bot/api/v1
       stream: true
+      order: 1
 
   - model_name: qwen3.8-max
     model_info:
@@ -392,6 +398,7 @@ model_list:
       api_key: os.environ/CLINE_API_KEY
       api_base: https://api.cline.bot/api/v1
       stream: true
+      order: 1
 
   # Ollama models
   - model_name: deepseek-v4.1-flash
@@ -402,6 +409,7 @@ model_list:
       api_key: os.environ/OLLAMA_API_KEY
       api_base: https://ollama.com/api/chat
       keep_alive: "10m"
+      order: 2
   - model_name: glm-5.3
     model_info:
 {{ litellm_model_info('glm-5.3', 'ollama') }}
@@ -410,6 +418,7 @@ model_list:
       api_key: os.environ/OLLAMA_API_KEY
       api_base: https://ollama.com/api/chat
       keep_alive: "10m"
+      order: 2
   - model_name: glm-5.3-flash
     model_info:
 {{ litellm_model_info('glm-5.3-flash', 'ollama') }}
@@ -418,6 +427,7 @@ model_list:
       api_key: os.environ/OLLAMA_API_KEY
       api_base: https://ollama.com/api/chat
       keep_alive: "10m"
+      order: 2
   - model_name: kimi-k3
     model_info:
 {{ litellm_model_info('kimi-k3', 'ollama') }}
@@ -426,6 +436,7 @@ model_list:
       api_key: os.environ/OLLAMA_API_KEY
       api_base: https://ollama.com/api/chat
       keep_alive: "10m"
+      order: 2
   - model_name: minimax-m3
     model_info:
 {{ litellm_model_info('minimax-m3', 'ollama') }}
@@ -434,6 +445,7 @@ model_list:
       api_key: os.environ/OLLAMA_API_KEY
       api_base: https://ollama.com/api/chat
       keep_alive: "10m"
+      order: 2
 
   # Command Code models. The openai/ route is deliberate: Command Code
   # addresses models by vendor-prefixed id, and any native provider prefix
@@ -446,6 +458,7 @@ model_list:
       api_key: os.environ/COMMANDCODE_API_KEY
       api_base: https://api.commandcode.ai/provider/v1
       stream: true
+      order: 3
 
   - model_name: glm-5.3
     model_info:
@@ -455,7 +468,7 @@ model_list:
       api_key: os.environ/COMMANDCODE_API_KEY
       api_base: https://api.commandcode.ai/provider/v1
       stream: true
-
+      order: 3
   - model_name: glm-5.3-flash
     model_info:
 {{ litellm_model_info('glm-5.3-flash', 'commandcode') }}
@@ -464,7 +477,7 @@ model_list:
       api_key: os.environ/COMMANDCODE_API_KEY
       api_base: https://api.commandcode.ai/provider/v1
       stream: true
-
+      order: 3
   - model_name: kimi-k3
     model_info:
 {{ litellm_model_info('kimi-k3', 'commandcode') }}
@@ -473,7 +486,7 @@ model_list:
       api_key: os.environ/COMMANDCODE_API_KEY
       api_base: https://api.commandcode.ai/provider/v1
       stream: true
-
+      order: 3
   - model_name: mimo-v2.5
     model_info:
 {{ litellm_model_info('mimo-v2.5', 'commandcode') }}
@@ -482,7 +495,7 @@ model_list:
       api_key: os.environ/COMMANDCODE_API_KEY
       api_base: https://api.commandcode.ai/provider/v1
       stream: true
-
+      order: 3
   - model_name: mimo-v2.5-pro
     model_info:
 {{ litellm_model_info('mimo-v2.5-pro', 'commandcode') }}
@@ -491,7 +504,7 @@ model_list:
       api_key: os.environ/COMMANDCODE_API_KEY
       api_base: https://api.commandcode.ai/provider/v1
       stream: true
-
+      order: 3
   - model_name: minimax-m3
     model_info:
 {{ litellm_model_info('minimax-m3', 'commandcode') }}
@@ -500,7 +513,7 @@ model_list:
       api_key: os.environ/COMMANDCODE_API_KEY
       api_base: https://api.commandcode.ai/provider/v1
       stream: true
-
+      order: 3
   - model_name: qwen3.8-max
     model_info:
 {{ litellm_model_info('qwen3.8-max', 'commandcode') }}
@@ -509,7 +522,7 @@ model_list:
       api_key: os.environ/COMMANDCODE_API_KEY
       api_base: https://api.commandcode.ai/provider/v1
       stream: true
-
+      order: 3
   # OpenRouter models (generated)
   - model_name: nvidia-nemotron-3-super-free
     litellm_params:
@@ -601,55 +614,6 @@ mcp_servers:
 
 router_settings:
   routing_strategy: simple-shuffle
-  routing_groups:
-    - group_name: deepseek-v4.1-flash-group
-      models: [deepseek-v4.1-flash]
-      routing_strategy: latency-based-routing
-      routing_strategy_args:
-        ttl: 300
-        lowest_latency_buffer: 0.5
-    - group_name: glm-5.3-group
-      models: [glm-5.3]
-      routing_strategy: latency-based-routing
-      routing_strategy_args:
-        ttl: 300
-        lowest_latency_buffer: 0.5
-    - group_name: glm-5.3-flash-group
-      models: [glm-5.3-flash]
-      routing_strategy: latency-based-routing
-      routing_strategy_args:
-        ttl: 300
-        lowest_latency_buffer: 0.5
-    - group_name: kimi-k3-group
-      models: [kimi-k3]
-      routing_strategy: latency-based-routing
-      routing_strategy_args:
-        ttl: 300
-        lowest_latency_buffer: 0.5
-    - group_name: mimo-v2.5-group
-      models: [mimo-v2.5]
-      routing_strategy: latency-based-routing
-      routing_strategy_args:
-        ttl: 300
-        lowest_latency_buffer: 0.5
-    - group_name: mimo-v2.5-pro-group
-      models: [mimo-v2.5-pro]
-      routing_strategy: latency-based-routing
-      routing_strategy_args:
-        ttl: 300
-        lowest_latency_buffer: 0.5
-    - group_name: minimax-m3-group
-      models: [minimax-m3]
-      routing_strategy: latency-based-routing
-      routing_strategy_args:
-        ttl: 300
-        lowest_latency_buffer: 0.5
-    - group_name: qwen3.8-max-group
-      models: [qwen3.8-max]
-      routing_strategy: latency-based-routing
-      routing_strategy_args:
-        ttl: 300
-        lowest_latency_buffer: 0.5
   fallbacks:
     - agentic:
         - deepseek-v4.1-flash
