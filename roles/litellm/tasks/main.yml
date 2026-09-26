@@ -162,3 +162,27 @@
   retries: 30
   delay: 10
   become: false
+
+- name: Verify deployed LiteLLM version matches the pinned image
+  # Liveliness only proves the stack is up; after an image bump this catches
+  # a container that is still running the previous release.
+  ansible.builtin.command: >-
+    podman exec litellm python -c
+    "import importlib.metadata as m; print(m.version('litellm'))"
+  become: false
+  register: litellm_deployed_version
+  changed_when: false
+
+- name: Fail if the deployed version does not match the pinned image
+  ansible.builtin.assert:
+    that:
+      - litellm_deployed_version.stdout | trim == litellm_image.split(':') | last | regex_replace('^v', '')
+    fail_msg: "Deployed LiteLLM {{ litellm_deployed_version.stdout | trim }} does not match pinned image {{ litellm_image }}"
+
+- name: Remove old unused container images
+  # Safe: every image the stack uses is referenced by a running container,
+  # so only superseded images (for example a previous litellm release) go.
+  ansible.builtin.command: "podman image prune -af"
+  become: false
+  register: litellm_image_prune
+  changed_when: litellm_image_prune.stdout | trim | length > 0
