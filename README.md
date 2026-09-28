@@ -7,7 +7,7 @@ Ansible playbook that installs the latest LiteLLM proxy and its dependencies on
 
 | Component  | Image                                       | Purpose                             |
 | ---------- | ------------------------------------------- | ----------------------------------- |
-| LiteLLM    | `ghcr.io/berriai/litellm-database:v1.102.1` | OpenAI-compatible proxy             |
+| LiteLLM    | `ghcr.io/berriai/litellm-database:v1.103.0` | OpenAI-compatible proxy             |
 | Headroom   | `ghcr.io/headroomlabs-ai/headroom:0.35.0`   | Prompt compression sidecar (opt-in) |
 | PostgreSQL | `postgres:16-alpine`                        | Keys, users, spend logs             |
 | Redis      | `redis:7-alpine`                            | Response cache + auth cache (AOF)   |
@@ -63,7 +63,7 @@ roles/
 
 ## Notes
 
-- `litellm_image` is pinned to a release tag (`litellm-database:v1.102.1`) so
+- `litellm_image` is pinned to a release tag (`litellm-database:v1.103.0`) so
   upgrades and rollbacks are explicit. Bump that variable to move version, and
   confirm the running build with
   `podman exec litellm python -c "import importlib.metadata as m; print(m.version('litellm'))"`.

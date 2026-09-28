@@ -88,6 +88,18 @@
     'supports_computer_use': False,
     'supports_prompt_caching': True
   },
+  'muse-spark-1.3-contributor': {
+    'max_input_tokens': 1048576,
+    'max_output_tokens': 943718,
+    'max_tokens': 943718,
+    'mode': 'chat',
+    'supports_function_calling': True,
+    'supports_tool_choice': True,
+    'supports_reasoning': True,
+    'supports_vision': True,
+    'supports_response_schema': True,
+    'supports_prompt_caching': True
+  },
   'qwen3.8-max': {
     'max_input_tokens': 1000000,
     'max_output_tokens': 128000,
@@ -204,6 +216,11 @@
       'input_cost_per_token': 0.0000003,
       'output_cost_per_token': 0.0000012,
       'cache_read_input_token_cost': 0.00000006
+    },
+    'muse-spark-1.3-contributor': {
+      'input_cost_per_token': 0.0000001,
+      'output_cost_per_token': 0.0000002,
+      'cache_read_input_token_cost': 0.000000002
     },
     'qwen3.8-max': {
       'input_cost_per_token': 0.000002,
@@ -510,6 +527,15 @@ model_list:
 {{ litellm_model_info('minimax-m3', 'commandcode') }}
     litellm_params:
       model: openai/MiniMaxAI/MiniMax-M3
+      api_key: os.environ/COMMANDCODE_API_KEY
+      api_base: https://api.commandcode.ai/provider/v1
+      stream: true
+      order: 3
+  - model_name: muse-spark-1.3-contributor
+    model_info:
+{{ litellm_model_info('muse-spark-1.3-contributor', 'commandcode') }}
+    litellm_params:
+      model: openai/meta/muse-spark-1.3-contributor
       api_key: os.environ/COMMANDCODE_API_KEY
       api_base: https://api.commandcode.ai/provider/v1
       stream: true
