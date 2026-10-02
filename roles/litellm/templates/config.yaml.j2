@@ -3,6 +3,7 @@
 {{ litellm_model_costs[provider][model] | combine(litellm_model_caps[model]) | combine(litellm_health_check_tokens) | to_nice_yaml(indent=2, sort_keys=False) | indent(6, True) | regex_replace('\n\Z', '') }}
 {%- endmacro %}
 model_list:
+{% set opencode_go_headers = {'extra_headers': {'x-opencode-session': opencode_session_id}} %}
 {% for entry in litellm_model_list %}
   - model_name: {{ entry.model_name }}
 {% if entry.costs_provider is defined %}
@@ -12,8 +13,10 @@ model_list:
     model_info:
 {{ entry.model_info | to_nice_yaml(indent=2, sort_keys=False) | indent(6, True) | regex_replace('\n\Z', '') }}
 {% endif %}
+{% set params = entry.litellm_params %}
+{% if entry.litellm_params.api_base is defined and 'opencode.ai/zen/go' in entry.litellm_params.api_base %}{% set params = params | combine(opencode_go_headers) %}{% endif %}
     litellm_params:
-{{ entry.litellm_params | to_nice_yaml(indent=2, sort_keys=False) | indent(6, True) | regex_replace('\n\Z', '') }}
+{{ params | to_nice_yaml(indent=2, sort_keys=False) | indent(6, True) | regex_replace('\n\Z', '') }}
 {% endfor %}
 
 {% if headroom_enabled | bool %}

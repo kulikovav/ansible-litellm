@@ -125,6 +125,13 @@ litellm_health_check_tokens:
   health_check_max_tokens_reasoning: 128
   health_check_max_tokens_non_reasoning: 16
 
+# OpenCode Go rejects requests without a stable x-opencode-session header
+# (https://opencode.ai/docs/go/#where-can-i-use-it). The config template injects
+# this into every model_list entry whose api_base points at /zen/go.
+# ponytail: one global session, not one per client conversation; satisfies Go's
+# routing check. Upgrade to per-request passthrough if Go rejects shared sessions.
+opencode_session_id: "bleenk-litellm"
+
 # Deployment list, in routing order. Entries without a costs provider (hosted
 # vLLM, OpenRouter) carry a literal model_info or none at all.
 litellm_model_list:
