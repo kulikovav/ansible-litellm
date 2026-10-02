@@ -44,8 +44,8 @@ roles/
    ```
 
    Fill in real values before encrypting: PostgreSQL/Redis passwords, the
-   `sk-` master key, and provider API keys (`CLINE_API_KEY`,
-   `COMMANDCODE_API_KEY`, `OPENROUTER_API_KEY`, `EXA_API_KEY`,
+   `sk-` master key, and provider API keys (`OPENCODE_API_KEY`,
+   `CLINE_API_KEY`, `COMMANDCODE_API_KEY`, `OPENROUTER_API_KEY`, `EXA_API_KEY`,
    `FIRECRAWL_API_KEY`, `HEADROOM_API_KEY`, `CONTEXT7_API_KEY`,
    `OLLAMA_API_KEY`, `RESEND_API_KEY`).
 

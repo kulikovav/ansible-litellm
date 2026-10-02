@@ -86,10 +86,64 @@ headroom_config_dir: "/home/nonroot/.headroom/config"
 headroom_proxy_token: "{{ vault_headroom_proxy_token }}"
 
 # ---------------------------------------------------------------------------
+# LiteLLM model catalog (rendered as config.yaml model_list)
+# ---------------------------------------------------------------------------
+# Caps are identical for every provider of a model, costs differ per provider.
+# litellm_model_list entries name their costs provider in costs_provider; the
+# template combines that provider's costs with the model's caps and the
+# health-check pins (costs first) into the rendered model_info block.
+# Costs are USD per token.
+#
+# The real catalog for this deployment lives in vars_local.yml (gitignored,
+# same directory, auto-loaded by Ansible after this file, overrides these
+# examples).
+# The values below are placeholders, not live data.
+# ponytail: examples are not a deployable catalog (one fake model, one fake
+# provider); copy the real data to vars.local.yml before a real deployment.
+litellm_model_caps:
+  example-model:
+    max_input_tokens: 1000000
+    max_output_tokens: 64000
+    max_tokens: 64000
+    mode: chat
+    supports_function_calling: true
+    supports_reasoning: true
+    supports_tool_choice: true
+    supports_prompt_caching: true
+
+litellm_model_costs:
+  exampleprovider:
+    example-model:
+      input_cost_per_token: 0.000001
+      output_cost_per_token: 0.000004
+      cache_read_input_token_cost: 0.0000001
+
+# Health probe caps applied to every generated model_info. LiteLLM picks the
+# 128/16 tier from its internal model registry only when the deployment string
+# is listed there, so pin the tier per model_info to make it deterministic.
+litellm_health_check_tokens:
+  health_check_max_tokens_reasoning: 128
+  health_check_max_tokens_non_reasoning: 16
+
+# Deployment list, in routing order. Entries without a costs provider (hosted
+# vLLM, OpenRouter) carry a literal model_info or none at all.
+litellm_model_list:
+  - model_name: example-model
+    costs_provider: exampleprovider
+    litellm_params:
+      model: exampleprovider/example-model
+      api_key: os.environ/EXAMPLE_API_KEY
+      api_base: https://api.example.com/v1
+      stream: true
+      order: 1
+
+# ---------------------------------------------------------------------------
 # Provider API keys (os.environ references in config.yaml)
 # ---------------------------------------------------------------------------
+opencode_api_key: "{{ vault_opencode_api_key }}"
 cline_api_key: "{{ vault_cline_api_key }}"
 commandcode_api_key: "{{ vault_commandcode_api_key }}"
+commandcode2_api_key: "{{ vault_commandcode2_api_key }}"
 openrouter_api_key: "{{ vault_openrouter_api_key }}"
 exa_api_key: "{{ vault_exa_api_key }}"
 firecrawl_api_key: "{{ vault_firecrawl_api_key }}"

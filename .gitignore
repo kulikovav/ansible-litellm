@@ -1,6 +1,11 @@
 # Secrets — never commit real credentials
 inventory/group_vars/all/secrets.yml
 
+# Real deployment data (model catalog) — vars.yml keeps examples only.
+# Must sort after vars.yml alphabetically: Ansible loads group_vars files in
+# alphabetical order and later files win.
+inventory/group_vars/all/vars_local.yml
+
 # Python
 __pycache__/
 *.py[cod]
