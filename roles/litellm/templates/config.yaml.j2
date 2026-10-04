@@ -1,6 +1,6 @@
 ---
-{% macro litellm_model_info(model, provider) -%}
-{{ litellm_model_costs[provider][model] | combine(litellm_model_caps[model]) | combine(litellm_health_check_tokens) | to_nice_yaml(indent=2, sort_keys=False) | indent(6, True) | regex_replace('\n\Z', '') }}
+{% macro litellm_model_info(model, provider, overrides={}) -%}
+{{ litellm_model_costs[provider][model] | combine(litellm_model_caps[model]) | combine(litellm_health_check_tokens) | combine(overrides) | to_nice_yaml(indent=2, sort_keys=False) | indent(6, True) | regex_replace('\n\Z', '') }}
 {%- endmacro %}
 model_list:
 {% set opencode_go_headers = {'extra_headers': {'x-opencode-session': opencode_session_id}} %}
@@ -8,7 +8,7 @@ model_list:
   - model_name: {{ entry.model_name }}
 {% if entry.costs_provider is defined %}
     model_info:
-{{ litellm_model_info(entry.model_name, entry.costs_provider) }}
+{{ litellm_model_info(entry.model_name, entry.costs_provider, entry.model_info | default({})) }}
 {% elif entry.model_info is defined %}
     model_info:
 {{ entry.model_info | to_nice_yaml(indent=2, sort_keys=False) | indent(6, True) | regex_replace('\n\Z', '') }}

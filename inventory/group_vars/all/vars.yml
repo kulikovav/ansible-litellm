@@ -91,7 +91,8 @@ headroom_proxy_token: "{{ vault_headroom_proxy_token }}"
 # Caps are identical for every provider of a model, costs differ per provider.
 # litellm_model_list entries name their costs provider in costs_provider; the
 # template combines that provider's costs with the model's caps and the
-# health-check pins (costs first) into the rendered model_info block.
+# health-check pins (costs first) into the rendered model_info block. An
+# entry's own model_info block is merged over that generated block.
 # Costs are USD per token.
 #
 # The real catalog for this deployment lives in vars_local.yml (gitignored,
